@@ -23,95 +23,115 @@
       bottom: 0; color: transparent; cursor: pointer; height: auto; left: 0; position: absolute; right: 0; top: 0; width: auto;
     }
     input[type="date"] { position: relative; }
+    
+    /* スクロールバー非表示 (見た目をスッキリさせるため) */
+    ::-webkit-scrollbar { display: none; }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen text-gray-800 font-sans flex justify-center">
+<!-- h-[100dvh] と overflow-hidden で画面全体を固定 -->
+<body class="bg-gray-50 h-[100dvh] overflow-hidden text-gray-800 font-sans flex justify-center">
 
-  <div class="w-full max-w-md bg-white shadow-xl min-h-screen flex flex-col relative">
+  <div class="w-full max-w-md bg-white shadow-xl h-full flex flex-col relative">
     
-    <!-- ヘッダー -->
-    <header class="bg-white px-6 py-4 shadow-sm z-10 sticky top-0 flex items-center justify-between">
-      <h1 id="header-title" class="text-xl font-bold text-gray-800 flex items-center gap-2">
-        <i data-lucide="activity" class="text-pink-500"></i> 体重記録
-      </h1>
-    </header>
-
-    <!-- メインコンテンツ -->
-    <main class="flex-1 overflow-y-auto pb-24">
+    <!-- メインコンテンツ (ヘッダー削除、スクロールは残すが基本的に1画面に収める) -->
+    <main class="flex-1 overflow-y-auto">
       
       <!-- ================= ダイエット画面 ================= -->
-      <div id="view-diet" class="p-6 space-y-6">
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold text-gray-700">記録する</h2>
-            <input type="date" id="diet-date" class="text-sm border-none bg-gray-100 rounded-lg px-3 py-1.5 text-gray-700 outline-none focus:ring-2 focus:ring-pink-200">
+      <div id="view-diet" class="p-3 h-full flex flex-col gap-3 relative">
+        
+        <!-- 記録エリア -->
+        <div id="diet-input-area" class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center flex-1 transition-all duration-300">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-bold text-gray-700 text-lg">今日の記録</h2>
+            <input type="date" id="diet-date" class="text-sm border-none bg-gray-100 rounded-md px-3 py-2 text-gray-700 outline-none focus:ring-1 focus:ring-pink-200">
           </div>
-          <div class="flex gap-4">
-            <div class="flex-1 space-y-1">
-              <label class="text-xs text-gray-500 font-medium">体重 (kg)</label>
-              <input type="number" step="0.1" id="diet-weight" class="w-full p-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-pink-200 text-lg font-bold text-gray-800">
-            </div>
-            <div class="flex-1 space-y-1">
-              <label class="text-xs text-gray-500 font-medium">今日の目標 (kg)</label>
-              <input type="number" step="0.1" id="diet-target" class="w-full p-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-pink-200 text-lg font-bold text-gray-500">
-            </div>
-          </div>
-          <button id="diet-save-btn" class="w-full mt-4 bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-            <i data-lucide="plus" class="w-5 h-5"></i> 保存する
-          </button>
           
-          <div id="diet-diff-container" class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between hidden">
-            <span class="text-sm text-gray-500">目標との差</span>
-            <span id="diet-diff-value" class="font-bold text-xl"></span>
+          <div class="flex flex-col gap-6">
+            <div class="space-y-2">
+              <label class="text-sm text-gray-500 font-bold">体重 (kg)</label>
+              <input type="number" step="0.1" id="diet-weight" placeholder="0.0" class="w-full p-4 bg-gray-50 rounded-lg outline-none focus:ring-2 focus:ring-pink-200 text-2xl font-bold text-gray-800 text-center">
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm text-gray-500 font-bold">今日の目標 (kg)</label>
+              <input type="number" step="0.1" id="diet-target" placeholder="0.0" class="w-full p-4 bg-gray-50 rounded-lg outline-none focus:ring-2 focus:ring-pink-200 text-xl font-bold text-gray-500 text-center">
+            </div>
+          </div>
+          
+          <div class="mt-6 flex flex-col gap-3">
+             <button id="diet-save-btn" class="w-full bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm text-lg">
+                <i data-lucide="check" class="w-6 h-6"></i> 保存する
+              </button>
+              
+              <div id="diet-diff-container" class="w-full flex items-center justify-center bg-gray-50 rounded-lg py-3 hidden">
+                <span class="text-sm text-gray-500 mr-2">目標との差:</span>
+                <span id="diet-diff-value" class="font-bold text-lg"></span>
+              </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <h2 class="font-bold text-gray-700 mb-4 flex items-center gap-2">
-            <i data-lucide="award" class="text-yellow-500 w-[18px] h-[18px]"></i> 体重と目標の推移
-          </h2>
-          <div class="h-72 w-full relative">
+        <!-- グラフ切り替えボタン -->
+        <button id="toggle-chart-btn" class="shrink-0 bg-white border border-gray-200 text-pink-500 font-bold py-3 rounded-xl shadow-sm text-sm flex items-center justify-center gap-2 transition-all">
+          <i data-lucide="bar-chart-2" class="w-5 h-5"></i> グラフを表示
+        </button>
+
+        <!-- グラフエリア (デフォルトは非表示) -->
+        <div id="diet-chart-area" class="hidden-view bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex-1 flex-col min-h-0">
+          <div class="flex items-center justify-between mb-2 shrink-0">
+            <h2 class="font-bold text-gray-700 flex items-center gap-1 text-sm">
+              <i data-lucide="award" class="text-yellow-500 w-[14px] h-[14px]"></i> 推移
+            </h2>
+            <!-- 期間選択ボタン群 -->
+            <div class="flex gap-1 bg-gray-100 p-0.5 rounded-lg">
+              <button data-period="7" class="diet-period-btn px-2 py-1 text-[10px] rounded-md bg-white shadow-sm font-bold text-pink-500">7日</button>
+              <button data-period="30" class="diet-period-btn px-2 py-1 text-[10px] rounded-md text-gray-500 hover:bg-gray-200">1月</button>
+              <button data-period="90" class="diet-period-btn px-2 py-1 text-[10px] rounded-md text-gray-500 hover:bg-gray-200">3月</button>
+              <button data-period="180" class="diet-period-btn px-2 py-1 text-[10px] rounded-md text-gray-500 hover:bg-gray-200">半年</button>
+              <button data-period="365" class="diet-period-btn px-2 py-1 text-[10px] rounded-md text-gray-500 hover:bg-gray-200">1年</button>
+              <button data-period="all" class="diet-period-btn px-2 py-1 text-[10px] rounded-md text-gray-500 hover:bg-gray-200">全</button>
+            </div>
+          </div>
+          <div class="flex-1 w-full relative min-h-0">
             <canvas id="diet-chart"></canvas>
-            <div id="diet-chart-empty" class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm bg-white">データがありません</div>
+            <div id="diet-chart-empty" class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs bg-white">データがありません</div>
           </div>
         </div>
       </div>
 
       <!-- ================= 目標設定画面 ================= -->
-      <div id="view-target" class="hidden-view p-6 space-y-6">
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h2 class="font-bold text-gray-800 mb-2 flex items-center gap-2">
-            <i data-lucide="settings" class="text-purple-500 w-5 h-5"></i> 目標体重の自動計算セット
+      <div id="view-target" class="hidden-view p-4 h-full flex flex-col justify-center gap-4">
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 shrink-0">
+          <h2 class="font-bold text-gray-800 mb-2 flex items-center gap-2 text-sm">
+            <i data-lucide="settings" class="text-purple-500 w-4 h-4"></i> 目標の一括設定
           </h2>
-          <p class="text-xs text-gray-500 mb-6 leading-relaxed">
-            開始日から終了日までの期間を指定して、目標体重をなめらかに一括で割り当てます。毎日の目標入力の手間が省けます。
+          <p class="text-[10px] text-gray-500 mb-4 leading-relaxed">
+            期間と体重を指定して、毎日の目標をなめらかに自動計算します。
           </p>
 
-          <div class="space-y-5">
-            <div class="bg-gray-50 p-4 rounded-xl space-y-3 border border-gray-100">
-              <label class="text-xs font-bold text-gray-600">期間設定</label>
+          <div class="space-y-4">
+            <div class="bg-gray-50 p-3 rounded-lg space-y-2 border border-gray-100">
+              <label class="text-[10px] font-bold text-gray-600">期間</label>
               <div class="flex gap-2 items-center">
-                <input type="date" id="target-start-date" class="flex-1 text-sm p-2.5 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-purple-200">
-                <span class="text-gray-400 font-bold">〜</span>
-                <input type="date" id="target-end-date" class="flex-1 text-sm p-2.5 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-purple-200">
+                <input type="date" id="target-start-date" class="flex-1 text-xs p-2 rounded-md border border-gray-200 outline-none focus:ring-1 focus:ring-purple-200">
+                <span class="text-gray-400 font-bold text-xs">〜</span>
+                <input type="date" id="target-end-date" class="flex-1 text-xs p-2 rounded-md border border-gray-200 outline-none focus:ring-1 focus:ring-purple-200">
               </div>
             </div>
 
-            <div class="bg-gray-50 p-4 rounded-xl space-y-3 border border-gray-100">
-              <label class="text-xs font-bold text-gray-600">目標体重</label>
-              <div class="flex gap-4">
+            <div class="bg-gray-50 p-3 rounded-lg space-y-2 border border-gray-100">
+              <label class="text-[10px] font-bold text-gray-600">目標体重</label>
+              <div class="flex gap-2">
                 <div class="flex-1">
-                  <label class="text-xs text-gray-500 mb-1 block">開始時 (kg)</label>
-                  <input type="number" step="0.1" id="target-start-weight" placeholder="例: 65.5" class="w-full p-2.5 text-base font-bold rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-purple-200">
+                  <label class="text-[10px] text-gray-500 mb-1 block">開始 (kg)</label>
+                  <input type="number" step="0.1" id="target-start-weight" placeholder="65.5" class="w-full p-2 text-sm font-bold rounded-md border border-gray-200 outline-none focus:ring-1 focus:ring-purple-200">
                 </div>
                 <div class="flex-1">
-                  <label class="text-xs text-gray-500 mb-1 block">終了時 (kg)</label>
-                  <input type="number" step="0.1" id="target-end-weight" placeholder="例: 63.0" class="w-full p-2.5 text-base font-bold rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-purple-200">
+                  <label class="text-[10px] text-gray-500 mb-1 block">終了 (kg)</label>
+                  <input type="number" step="0.1" id="target-end-weight" placeholder="63.0" class="w-full p-2 text-sm font-bold rounded-md border border-gray-200 outline-none focus:ring-1 focus:ring-purple-200">
                 </div>
               </div>
             </div>
 
-            <button id="target-save-btn" class="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 text-white font-bold py-3.5 rounded-xl transition-colors mt-4 shadow-sm">
+            <button id="target-save-btn" class="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 text-white font-bold py-3 rounded-lg transition-colors mt-2 shadow-sm text-sm">
               自動計算して設定する
             </button>
           </div>
@@ -119,98 +139,123 @@
       </div>
 
       <!-- ================= 支出管理画面 ================= -->
-      <div id="view-expense" class="hidden-view p-6 space-y-6">
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold text-gray-700">支出を記録</h2>
-            <input type="date" id="expense-date" class="text-sm border-none bg-gray-100 rounded-lg px-3 py-1.5 text-gray-700 outline-none focus:ring-2 focus:ring-blue-200">
+      <div id="view-expense" class="hidden-view p-3 h-full flex flex-col gap-3">
+        
+        <!-- 記録エリア -->
+        <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 shrink-0">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="font-bold text-gray-700 text-sm">支出を記録</h2>
+            <input type="date" id="expense-date" class="text-xs border-none bg-gray-100 rounded-md px-2 py-1 text-gray-700 outline-none focus:ring-1 focus:ring-blue-200">
           </div>
-          <div class="space-y-4">
+          
+          <div class="space-y-3">
             <div>
-              <div id="expense-categories" class="flex flex-wrap gap-2">
+              <div id="expense-categories" class="flex flex-wrap gap-1">
                 <!-- JSで生成 -->
               </div>
             </div>
-            <div>
-              <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">¥</span>
-                <input type="number" id="expense-amount" placeholder="0" class="w-full pl-8 p-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-blue-200 text-lg font-bold text-gray-800">
+            <div class="flex gap-2 items-center">
+              <div class="relative flex-1">
+                <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">¥</span>
+                <input type="number" id="expense-amount" placeholder="0" class="w-full pl-6 p-2 bg-gray-50 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 text-sm font-bold text-gray-800">
               </div>
+              <button id="expense-save-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm text-sm whitespace-nowrap">
+                <i data-lucide="plus" class="w-4 h-4"></i> 追加
+              </button>
             </div>
-            <button id="expense-save-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-              <i data-lucide="plus" class="w-5 h-5"></i> 追加する
-            </button>
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-6">
-            <button id="exp-prev-month" class="p-1 bg-gray-50 rounded-full text-gray-500 hover:bg-gray-100"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-            <h2 id="exp-month-title" class="font-bold text-gray-700 flex items-center gap-2">
-              <i data-lucide="calendar" class="text-blue-500 w-[18px] h-[18px]"></i>
+        <!-- グラフエリア -->
+        <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex-1 flex flex-col min-h-0">
+          <div class="flex items-center justify-between mb-2 shrink-0">
+            <button id="exp-prev-month" class="p-1 bg-gray-50 rounded-full text-gray-500 hover:bg-gray-100"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            <h2 id="exp-month-title" class="font-bold text-gray-700 flex items-center gap-1 text-sm">
+              <i data-lucide="calendar" class="text-blue-500 w-[14px] h-[14px]"></i>
             </h2>
-            <button id="exp-next-month" class="p-1 bg-gray-50 rounded-full text-gray-500 hover:bg-gray-100"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+            <button id="exp-next-month" class="p-1 bg-gray-50 rounded-full text-gray-500 hover:bg-gray-100"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
           </div>
-          <div class="text-center mb-6">
-            <p class="text-sm text-gray-500 mb-1">今月の総支出</p>
-            <p id="exp-total-amount" class="text-3xl font-bold text-gray-800 tracking-tight">¥0</p>
+          
+          <div id="exp-history-btn" class="text-center mb-2 shrink-0 cursor-pointer p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <p class="text-[10px] text-gray-500 mb-0.5">今月の総支出 <span class="text-blue-500 font-bold ml-1">履歴を見る &gt;</span></p>
+            <p id="exp-total-amount" class="text-xl font-bold text-gray-800 tracking-tight">¥0</p>
           </div>
-          <div class="h-48 w-full relative">
+          
+          <div class="flex-1 w-full relative min-h-0 pb-2">
             <canvas id="expense-chart"></canvas>
-            <div id="expense-chart-empty" class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm bg-white">記録がありません</div>
+            <div id="expense-chart-empty" class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs bg-white">記録がありません</div>
           </div>
         </div>
       </div>
 
       <!-- ================= 副業記録画面 ================= -->
-      <div id="view-work" class="hidden-view p-6 space-y-6">
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold text-gray-700">今日の副業タイム</h2>
-            <input type="date" id="work-date" class="text-sm border-none bg-gray-100 rounded-lg px-3 py-1.5 text-gray-700 outline-none focus:ring-2 focus:ring-orange-200">
+      <div id="view-work" class="hidden-view p-3 h-full flex flex-col gap-3">
+        
+        <!-- 記録エリア -->
+        <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 shrink-0">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="font-bold text-gray-700 text-sm">今日の副業タイム</h2>
+            <input type="date" id="work-date" class="text-xs border-none bg-gray-100 rounded-md px-2 py-1 text-gray-700 outline-none focus:ring-1 focus:ring-orange-200">
           </div>
-          <div class="space-y-4">
-            <div>
-              <label class="text-xs text-gray-500 font-medium block mb-1">作業時間 (分) / 目標: 30分</label>
-              <div class="relative">
-                <input type="number" id="work-minutes" placeholder="例: 30" class="w-full p-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-200 text-lg font-bold text-gray-800">
-                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">分</span>
-              </div>
+          
+          <div class="flex gap-2 items-end">
+            <div class="flex-1 relative">
+               <label class="text-[10px] text-gray-500 font-medium block mb-1">時間 (分) / 目標:30分</label>
+              <input type="number" id="work-minutes" placeholder="30" class="w-full p-2 bg-gray-50 rounded-lg outline-none focus:ring-1 focus:ring-orange-200 text-sm font-bold text-gray-800 text-center">
             </div>
-            <button id="work-save-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-              <i data-lucide="plus" class="w-5 h-5"></i> 記録する
+            <button id="work-save-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm text-sm whitespace-nowrap">
+              <i data-lucide="plus" class="w-4 h-4"></i> 記録
             </button>
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <h2 class="font-bold text-gray-700 mb-4 flex items-center gap-2">
-            <i data-lucide="target" class="text-orange-500 w-[18px] h-[18px]"></i> 作業の推移
-          </h2>
-          <div class="h-64 w-full relative">
+        <!-- グラフエリア -->
+        <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex-1 flex flex-col min-h-0">
+          <div class="flex items-center justify-between mb-2 shrink-0">
+            <h2 class="font-bold text-gray-700 flex items-center gap-1 text-sm">
+              <i data-lucide="target" class="text-orange-500 w-[14px] h-[14px]"></i> 作業の推移
+            </h2>
+            <button id="work-history-btn" class="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-1 rounded-md">履歴を見る</button>
+          </div>
+          <div class="flex-1 w-full relative min-h-0">
             <canvas id="work-chart"></canvas>
-            <div id="work-chart-empty" class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm bg-white">データがありません</div>
+            <div id="work-chart-empty" class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs bg-white">データがありません</div>
           </div>
         </div>
       </div>
 
     </main>
 
-    <!-- ボトムナビゲーション -->
-    <nav class="absolute bottom-0 w-full bg-white border-t border-gray-200 flex justify-around pb-safe">
-      <button data-tab="diet" class="nav-btn flex-1 py-3 flex flex-col items-center gap-1 transition-colors text-pink-500 font-bold">
-        <i data-lucide="activity" class="w-[22px] h-[22px]"></i><span class="text-[10px]">体重記録</span>
+    <!-- ボトムナビゲーション (固定) -->
+    <nav class="shrink-0 w-full bg-white border-t border-gray-200 flex justify-around pb-safe pt-1">
+      <button data-tab="diet" class="nav-btn flex-1 py-2 flex flex-col items-center gap-1 transition-colors text-pink-500 font-bold">
+        <i data-lucide="activity" class="w-5 h-5"></i><span class="text-[10px]">体重</span>
       </button>
-      <button data-tab="target" class="nav-btn flex-1 py-3 flex flex-col items-center gap-1 transition-colors text-gray-400">
-        <i data-lucide="target" class="w-[22px] h-[22px]"></i><span class="text-[10px]">目標設定</span>
+      <button data-tab="target" class="nav-btn flex-1 py-2 flex flex-col items-center gap-1 transition-colors text-gray-400">
+        <i data-lucide="target" class="w-5 h-5"></i><span class="text-[10px]">目標</span>
       </button>
-      <button data-tab="expense" class="nav-btn flex-1 py-3 flex flex-col items-center gap-1 transition-colors text-gray-400">
-        <i data-lucide="dollar-sign" class="w-[22px] h-[22px]"></i><span class="text-[10px]">支出管理</span>
+      <button data-tab="expense" class="nav-btn flex-1 py-2 flex flex-col items-center gap-1 transition-colors text-gray-400">
+        <i data-lucide="dollar-sign" class="w-5 h-5"></i><span class="text-[10px]">支出</span>
       </button>
-      <button data-tab="work" class="nav-btn flex-1 py-3 flex flex-col items-center gap-1 transition-colors text-gray-400">
-        <i data-lucide="laptop" class="w-[22px] h-[22px]"></i><span class="text-[10px]">副業記録</span>
+      <button data-tab="work" class="nav-btn flex-1 py-2 flex flex-col items-center gap-1 transition-colors text-gray-400">
+        <i data-lucide="laptop" class="w-5 h-5"></i><span class="text-[10px]">副業</span>
       </button>
     </nav>
+
+    <!-- 履歴表示用モーダル (非表示で待機) -->
+    <div id="history-modal" class="hidden-view absolute inset-0 bg-white z-50 flex flex-col">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 shrink-0">
+        <button id="history-prev-month" class="p-2 bg-gray-50 rounded-full text-gray-500 hover:bg-gray-100 hidden"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+        <h2 id="history-title" class="font-bold text-gray-700 text-sm flex-1 text-center">履歴</h2>
+        <div class="flex items-center gap-2">
+           <button id="history-next-month" class="p-2 bg-gray-50 rounded-full text-gray-500 hover:bg-gray-100 hidden"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+           <button id="close-history-btn" class="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+      </div>
+      <div id="history-list" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+        <!-- JSでリストを生成 -->
+      </div>
+    </div>
   </div>
 
   <script>
@@ -263,7 +308,9 @@
       expenses: loadData('expenses'),
       works: loadData('works'),
       expenseMonth: { year: getToday().getFullYear(), month: getToday().getMonth() + 1 },
-      expenseCategory: EXPENSE_CATEGORIES[0]
+      expenseCategory: EXPENSE_CATEGORIES[0],
+      dietPeriod: 7, // デフォルトは過去7日間
+      isChartVisible: false // グラフの表示状態
     };
 
     // Chart.js インスタンス保持用
@@ -285,26 +332,21 @@
       });
       const activeBtn = document.querySelector(`.nav-btn[data-tab="${tabId}"]`);
       
-      const headerTitle = document.getElementById('header-title');
       if(tabId === 'diet') {
         activeBtn.classList.replace('text-gray-400', 'text-pink-500');
         activeBtn.classList.add('font-bold');
-        headerTitle.innerHTML = `<i data-lucide="activity" class="text-pink-500"></i> 体重記録`;
         renderDiet();
       } else if(tabId === 'target') {
         activeBtn.classList.replace('text-gray-400', 'text-purple-500');
         activeBtn.classList.add('font-bold');
-        headerTitle.innerHTML = `<i data-lucide="target" class="text-purple-500"></i> 目標設定`;
-        renderTarget();
+        renderTarget(); // ← ここが欠落していたのがエラーの原因でした
       } else if(tabId === 'expense') {
         activeBtn.classList.replace('text-gray-400', 'text-blue-500');
         activeBtn.classList.add('font-bold');
-        headerTitle.innerHTML = `<i data-lucide="dollar-sign" class="text-blue-500"></i> 支出管理`;
         renderExpense();
       } else if(tabId === 'work') {
         activeBtn.classList.replace('text-gray-400', 'text-orange-500');
         activeBtn.classList.add('font-bold');
-        headerTitle.innerHTML = `<i data-lucide="laptop" class="text-orange-500"></i> 副業記録`;
         renderWork();
       }
       lucide.createIcons(); // アイコン再描画
@@ -325,10 +367,51 @@
       dietTargetEl.value = (record && record.target !== null) ? record.target : '';
     };
 
+    // グラフの表示/非表示切り替え
+    const toggleChartBtn = document.getElementById('toggle-chart-btn');
+    const chartArea = document.getElementById('diet-chart-area');
+    const inputArea = document.getElementById('diet-input-area');
+
+    toggleChartBtn.addEventListener('click', () => {
+      state.isChartVisible = !state.isChartVisible;
+      
+      if (state.isChartVisible) {
+        // グラフを表示モード（入力欄を完全に隠す）
+        chartArea.classList.remove('hidden-view');
+        chartArea.classList.add('flex');
+        inputArea.classList.add('hidden-view');
+        
+        toggleChartBtn.innerHTML = `<i data-lucide="edit-2" class="w-4 h-4"></i> 記録画面に戻る`;
+        toggleChartBtn.classList.replace('text-pink-500', 'text-gray-500');
+        
+        renderDiet();
+      } else {
+        // グラフを非表示モード（入力欄を表示）
+        chartArea.classList.add('hidden-view');
+        chartArea.classList.remove('flex');
+        inputArea.classList.remove('hidden-view');
+        
+        toggleChartBtn.innerHTML = `<i data-lucide="bar-chart-2" class="w-5 h-5"></i> グラフを表示`;
+        toggleChartBtn.classList.replace('text-gray-500', 'text-pink-500');
+        
+        updateDietDiffOnly(); 
+      }
+      lucide.createIcons();
+    });
+
+    // 入力イベントのバインド
+    document.getElementById('diet-date').addEventListener('change', () => {
+      updateDietForm();
+      if(!state.isChartVisible) updateDietDiffOnly();
+    });
+
     document.getElementById('diet-save-btn').addEventListener('click', () => {
-      const date = dietDateEl.value;
-      const w = dietWeightEl.value ? parseFloat(dietWeightEl.value) : null;
-      const t = dietTargetEl.value ? parseFloat(dietTargetEl.value) : null;
+      const dEl = document.getElementById('diet-date');
+      const wEl = document.getElementById('diet-weight');
+      const tEl = document.getElementById('diet-target');
+      const date = dEl.value;
+      const w = wEl.value ? parseFloat(wEl.value) : null;
+      const t = tEl.value ? parseFloat(tEl.value) : null;
       if (w === null && t === null) return;
 
       const idx = state.weights.findIndex(r => r.date === date);
@@ -337,43 +420,97 @@
       
       state.weights.sort((a, b) => new Date(a.date) - new Date(b.date));
       saveData('weights', state.weights);
-      renderDiet();
+      
+      if(state.isChartVisible) renderDiet();
+      else updateDietDiffOnly();
+    });
+
+    const updateDietDiffOnly = () => {
+       const todayRec = state.weights.find(r => r.date === getTodayStr());
+       const diffEl = document.getElementById('diet-diff-container');
+       const diffValEl = document.getElementById('diet-diff-value');
+       
+       if (todayRec && todayRec.weight && todayRec.target) {
+         const diff = (todayRec.weight - todayRec.target).toFixed(1);
+         diffValEl.textContent = (diff > 0 ? '+' : '') + diff + ' kg';
+         // 表示モードに合わせて文字サイズを変更
+         diffValEl.className = `font-bold ${state.isChartVisible ? 'text-sm' : 'text-lg'} ${diff <= 0 ? 'text-blue-500' : 'text-pink-500'}`;
+         diffEl.classList.remove('hidden');
+       } else {
+         diffEl.classList.add('hidden');
+       }
+    };
+
+    // 期間選択ボタンのイベントリスナー
+    document.querySelectorAll('.diet-period-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // スタイルリセット
+        document.querySelectorAll('.diet-period-btn').forEach(b => {
+          b.className = "diet-period-btn px-2 py-1 text-[10px] rounded-md text-gray-500 hover:bg-gray-200";
+        });
+        // 選択されたボタンをアクティブに
+        const clickedBtn = e.target;
+        clickedBtn.className = "diet-period-btn px-2 py-1 text-[10px] rounded-md bg-white shadow-sm font-bold text-pink-500";
+        
+        // 状態更新と再描画
+        const periodStr = clickedBtn.dataset.period;
+        state.dietPeriod = periodStr === 'all' ? 'all' : parseInt(periodStr, 10);
+        if(state.isChartVisible) renderDiet();
+      });
     });
 
     const renderDiet = () => {
-      updateDietForm();
-      const todayRec = state.weights.find(r => r.date === getTodayStr());
-      const diffEl = document.getElementById('diet-diff-container');
-      const diffValEl = document.getElementById('diet-diff-value');
+      const dEl = document.getElementById('diet-date');
+      const wEl = document.getElementById('diet-weight');
+      const tEl = document.getElementById('diet-target');
       
-      if (todayRec && todayRec.weight && todayRec.target) {
-        const diff = (todayRec.weight - todayRec.target).toFixed(1);
-        diffValEl.textContent = (diff > 0 ? '+' : '') + diff + ' kg';
-        diffValEl.className = `font-bold text-xl ${diff <= 0 ? 'text-blue-500' : 'text-pink-500'}`;
-        diffEl.classList.remove('hidden');
-      } else {
-        diffEl.classList.add('hidden');
+      const record = state.weights.find(r => r.date === dEl.value);
+      if(record) {
+         if(wEl.value === "") wEl.value = record.weight !== null ? record.weight : '';
+         if(tEl.value === "") tEl.value = record.target !== null ? record.target : '';
+      }
+      
+      updateDietDiffOnly();
+
+      // グラフが非表示なら描画処理をスキップ
+      if(!state.isChartVisible) return;
+
+      // グラフ描画のためのデータフィルタリング
+      let chartDataSrc = [...state.weights];
+      
+      if (state.dietPeriod !== 'all') {
+        const today = new Date();
+        const pastDate = new Date(today);
+        pastDate.setDate(today.getDate() - state.dietPeriod + 1); // +1 して今日を含める
+        
+        // 過去X日間のデータを抽出
+        chartDataSrc = state.weights.filter(r => {
+          const d = new Date(r.date);
+          return d >= pastDate && d <= today; // 未来の目標は表示させたい場合は右辺の条件を外す
+        });
       }
 
-      // グラフ描画
       const ctx = document.getElementById('diet-chart').getContext('2d');
       const emptyEl = document.getElementById('diet-chart-empty');
       
-      if (state.weights.length === 0) {
+      if (chartDataSrc.length === 0) {
         emptyEl.style.display = 'flex';
         if (dietChart) dietChart.destroy();
         return;
       }
       emptyEl.style.display = 'none';
 
-      const labels = state.weights.map(r => r.date.substring(5).replace('-', '/'));
-      const wData = state.weights.map(r => r.weight);
-      const tData = state.weights.map(r => r.target);
+      const labels = chartDataSrc.map(r => r.date.substring(5).replace('-', '/'));
+      const wData = chartDataSrc.map(r => r.weight);
+      const tData = chartDataSrc.map(r => r.target);
 
       // 0.5単位のスケール計算
       const allVals = [...wData, ...tData].filter(v => v !== null);
-      const min = Math.floor(Math.min(...allVals) * 2) / 2 - 0.5;
-      const max = Math.ceil(Math.max(...allVals) * 2) / 2 + 0.5;
+      let min = 0, max = 100;
+      if(allVals.length > 0) {
+        min = Math.floor(Math.min(...allVals) * 2) / 2 - 0.5;
+        max = Math.ceil(Math.max(...allVals) * 2) / 2 + 0.5;
+      }
 
       if (dietChart) dietChart.destroy();
       dietChart = new Chart(ctx, {
@@ -411,6 +548,7 @@
     tStartEl.value = getTodayStr();
     tEndEl.value = getOffsetDateStr(30);
 
+    // エラーの原因になっていた関数を追加
     const renderTarget = () => {
       const todayRec = state.weights.find(r => r.date === getTodayStr());
       if(todayRec && todayRec.weight) tStartWEl.value = todayRec.weight;
@@ -440,7 +578,10 @@
       state.weights.sort((a, b) => new Date(a.date) - new Date(b.date));
       saveData('weights', state.weights);
       alert('目標を一括設定しました');
-      switchTab('diet'); // ダイエット画面に戻す
+      
+      // 入力欄をクリア
+      tStartWEl.value = '';
+      tEndWEl.value = '';
     });
 
 
@@ -452,7 +593,7 @@
 
     const renderExpCategories = () => {
       expCatContainer.innerHTML = EXPENSE_CATEGORIES.map(cat => `
-        <button data-cat="${cat}" class="exp-cat-btn px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${state.expenseCategory === cat ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600'}">
+        <button data-cat="${cat}" class="exp-cat-btn px-2 py-1 rounded-full text-xs font-medium transition-colors ${state.expenseCategory === cat ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600'}">
           ${cat}
         </button>
       `).join('');
@@ -489,13 +630,12 @@
     const renderExpense = () => {
       renderExpCategories();
       const mStr = `${state.expenseMonth.year}-${String(state.expenseMonth.month).padStart(2, '0')}`;
-      document.getElementById('exp-month-title').innerHTML = `<i data-lucide="calendar" class="text-blue-500 w-[18px] h-[18px]"></i> ${state.expenseMonth.year}年 ${state.expenseMonth.month}月`;
+      document.getElementById('exp-month-title').innerHTML = `<i data-lucide="calendar" class="text-blue-500 w-[14px] h-[14px]"></i> ${state.expenseMonth.year}年 ${state.expenseMonth.month}月`;
       
       const mExpenses = state.expenses.filter(e => e.date.startsWith(mStr));
       const total = mExpenses.reduce((sum, e) => sum + e.amount, 0);
       document.getElementById('exp-total-amount').textContent = `¥${total.toLocaleString()}`;
 
-      // グラフデータ集計
       const agg = {};
       mExpenses.forEach(e => { agg[e.category] = (agg[e.category] || 0) + e.amount; });
       const chartData = Object.keys(agg).map(k => ({ name: k, value: agg[k] })).sort((a,b) => b.value - a.value);
@@ -524,7 +664,7 @@
         },
         options: {
           responsive: true, maintainAspectRatio: false, cutout: '65%',
-          plugins: { legend: { position: 'right', labels: { boxWidth: 12, usePointStyle: true } } }
+          plugins: { legend: { position: 'right', labels: { boxWidth: 10, usePointStyle: true, font: {size: 10} } } }
         }
       });
       lucide.createIcons();
@@ -561,7 +701,6 @@
       const ctx = document.getElementById('work-chart').getContext('2d');
       const emptyEl = document.getElementById('work-chart-empty');
 
-      // 直近14日分表示
       const recentWorks = state.works.slice(-14);
 
       if (recentWorks.length === 0) {
@@ -578,7 +717,6 @@
 
       if (workChart) workChart.destroy();
       
-      // 目標線をLine、実績をBarで表現する複合グラフ
       workChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -600,11 +738,99 @@
           plugins: { legend: { display: false } },
           scales: {
             x: { grid: { display: false } },
-            y: { beginAtZero: true, border: { display: false } }
+            y: { beginAtZero: true, border: { display: false }, ticks: { font: {size: 10} } }
           }
         }
       });
     };
+
+    // ================= 履歴表示モーダル機能 =================
+    const historyModal = document.getElementById('history-modal');
+    const historyList = document.getElementById('history-list');
+    const historyTitle = document.getElementById('history-title');
+    const historyPrevBtn = document.getElementById('history-prev-month');
+    const historyNextBtn = document.getElementById('history-next-month');
+    
+    let historyType = ''; // 'expense' or 'work'
+    let historyMonth = { year: getToday().getFullYear(), month: getToday().getMonth() + 1 };
+
+    document.getElementById('close-history-btn').addEventListener('click', () => {
+      historyModal.classList.add('hidden-view');
+    });
+    
+    const changeHistoryMonth = (offset) => {
+      let m = historyMonth.month + offset;
+      let y = historyMonth.year;
+      if(m > 12) { m = 1; y++; } else if(m < 1) { m = 12; y--; }
+      historyMonth = { year: y, month: m };
+      renderHistoryList();
+    };
+
+    historyPrevBtn.addEventListener('click', () => changeHistoryMonth(-1));
+    historyNextBtn.addEventListener('click', () => changeHistoryMonth(1));
+
+    const renderHistoryList = () => {
+        historyPrevBtn.classList.remove('hidden');
+        historyNextBtn.classList.remove('hidden');
+        
+        const mStr = `${historyMonth.year}-${String(historyMonth.month).padStart(2, '0')}`;
+
+        if (historyType === 'expense') {
+            historyTitle.textContent = `${historyMonth.year}年${historyMonth.month}月の支出`;
+            const mExpenses = state.expenses.filter(e => e.date.startsWith(mStr)).sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            if (mExpenses.length === 0) {
+              historyList.innerHTML = `<p class="text-center text-gray-400 text-sm mt-10">記録がありません</p>`;
+            } else {
+              historyList.innerHTML = mExpenses.map(e => `
+                <div class="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+                  <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 rounded-full" style="background-color: ${CATEGORY_COLORS[e.category]}"></div>
+                    <div>
+                      <p class="text-xs text-gray-400">${e.date.replace(/-/g, '/')}</p>
+                      <p class="text-sm font-bold text-gray-700">${e.category}</p>
+                    </div>
+                  </div>
+                  <p class="text-base font-bold text-gray-800">¥${e.amount.toLocaleString()}</p>
+                </div>
+              `).join('');
+            }
+        } else if (historyType === 'work') {
+            historyTitle.textContent = `${historyMonth.year}年${historyMonth.month}月の副業`;
+            const mWorks = state.works.filter(w => w.date.startsWith(mStr)).sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            if (mWorks.length === 0) {
+              historyList.innerHTML = `<p class="text-center text-gray-400 text-sm mt-10">記録がありません</p>`;
+            } else {
+              historyList.innerHTML = mWorks.map(w => `
+                <div class="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="laptop" class="text-gray-400 w-4 h-4"></i>
+                    <p class="text-sm font-bold text-gray-600">${w.date.replace(/-/g, '/')}</p>
+                  </div>
+                  <p class="text-base font-bold ${w.minutes >= WORK_GOAL ? 'text-orange-500' : 'text-gray-700'}">${w.minutes} 分</p>
+                </div>
+              `).join('');
+            }
+            lucide.createIcons();
+        }
+    };
+
+    // 支出の履歴表示
+    document.getElementById('exp-history-btn').addEventListener('click', () => {
+      historyType = 'expense';
+      historyMonth = { ...state.expenseMonth }; // 支出画面の月に合わせる
+      renderHistoryList();
+      historyModal.classList.remove('hidden-view');
+    });
+
+    // 副業の履歴表示
+    document.getElementById('work-history-btn').addEventListener('click', () => {
+      historyType = 'work';
+      historyMonth = { year: getToday().getFullYear(), month: getToday().getMonth() + 1 };
+      renderHistoryList();
+      historyModal.classList.remove('hidden-view');
+    });
 
     // --- 初期化 ---
     document.querySelectorAll('.nav-btn').forEach(btn => {
