@@ -47,13 +47,12 @@
               </div>
             </div>
             
-            <!-- 保存＆削除ボタン -->
             <div class="flex gap-2 mt-6">
               <button id="diet-delete-btn" class="hidden shrink-0 w-12 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl flex items-center justify-center transition-colors">
                 <i data-lucide="trash-2" class="w-5 h-5"></i>
               </button>
               <button id="diet-save-btn" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-                <i data-lucide="plus" class="w-5 h-5"></i> 保存する
+                <i data-lucide="plus" class="w-5 h-5" id="diet-save-icon"></i> <span id="diet-save-text">保存する</span>
               </button>
             </div>
 
@@ -92,97 +91,100 @@
 
       <!-- ================= 目標設定画面 ================= -->
       <div id="view-target" class="hidden-view h-full flex flex-col p-4 gap-3 overflow-y-auto">
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex-1 flex flex-col min-h-0">
-          <h2 class="font-bold text-gray-800 mb-3 flex items-center gap-1.5 text-sm shrink-0">
-            <i data-lucide="settings" class="text-purple-500 w-4 h-4"></i> 目標の自動計算セット
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex-1 flex flex-col">
+          <h2 class="font-bold text-gray-800 mb-2 flex items-center gap-2 shrink-0">
+            <i data-lucide="settings" class="text-purple-500 w-5 h-5"></i> 目標の自動計算セット
           </h2>
-          
-          <!-- モード切り替えタブ -->
-          <div class="flex bg-gray-100 p-1 rounded-lg mb-3 text-[10px] font-bold shrink-0">
-            <button id="tab-period" class="flex-1 py-1.5 bg-white shadow-sm text-purple-600 rounded-md transition-colors">期間から設定</button>
-            <button id="tab-pace" class="flex-1 py-1.5 text-gray-500 rounded-md transition-colors">ペースから設定</button>
+          <p class="text-[11px] text-gray-500 mb-4 leading-relaxed shrink-0">
+            日々の目標体重を自動計算して、指定した期間に一括で割り当てます。
+          </p>
+
+          <!-- 計算方法の切り替えタブ -->
+          <div class="flex bg-gray-100 p-1 rounded-xl mb-4 shrink-0">
+            <button id="tab-calc-period" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-white shadow-sm text-purple-600 transition-all">期間から設定</button>
+            <button id="tab-calc-pace" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all">ペースから設定</button>
           </div>
 
-          <div class="flex-1 overflow-y-auto min-h-0 pb-1">
-            <!-- 期間指定モード -->
-            <div id="form-period" class="space-y-3">
-              <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100">
-                <label class="text-[10px] font-bold text-gray-600 block mb-1.5">期間</label>
+          <!-- スクロール領域を削除し、flex-1で高さを吸収しつつ要素を詰める -->
+          <div class="flex-1 flex flex-col min-h-0 space-y-4">
+            
+            <!-- ====== モード1: 期間から設定 ====== -->
+            <div id="mode-calc-period" class="flex-1 flex flex-col gap-3">
+              <div class="bg-purple-50/50 p-2.5 rounded-xl border border-purple-100">
+                <label class="text-[10px] font-bold text-purple-700 block mb-1">いつまでに？ (期間)</label>
                 <div class="flex gap-2 items-center">
-                  <input type="date" id="target-start-date" class="flex-1 text-xs p-1.5 rounded-lg border border-gray-200">
-                  <span class="text-gray-400">〜</span>
-                  <input type="date" id="target-end-date" class="flex-1 text-xs p-1.5 rounded-lg border border-gray-200">
+                  <input type="date" id="target-start-date" class="flex-1 text-xs p-1.5 rounded-lg border border-purple-200 outline-none focus:ring-2 focus:ring-purple-300">
+                  <span class="text-purple-400">〜</span>
+                  <input type="date" id="target-end-date" class="flex-1 text-xs p-1.5 rounded-lg border border-purple-200 outline-none focus:ring-2 focus:ring-purple-300">
                 </div>
               </div>
 
-              <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100">
-                <label class="text-[10px] font-bold text-gray-600 block mb-1.5">目標体重</label>
+              <div class="bg-purple-50/50 p-2.5 rounded-xl border border-purple-100">
+                <label class="text-[10px] font-bold text-purple-700 block mb-1">どうなりたい？ (目標体重)</label>
                 <div class="flex gap-4">
                   <div class="flex-1">
-                    <label class="text-[10px] text-gray-500 block mb-1">開始時 (kg)</label>
-                    <input type="number" step="0.1" id="target-start-weight" class="w-full p-1.5 text-sm font-bold rounded-lg border border-gray-200">
+                    <label class="text-[10px] text-purple-500 block mb-0.5">開始時 (kg)</label>
+                    <input type="number" step="0.1" id="target-start-weight" class="w-full p-1.5 text-sm font-bold rounded-lg border border-purple-200 outline-none focus:ring-2 focus:ring-purple-300">
                   </div>
                   <div class="flex-1">
-                    <label class="text-[10px] text-gray-500 block mb-1">終了時 (kg)</label>
-                    <input type="number" step="0.1" id="target-end-weight" class="w-full p-1.5 text-sm font-bold rounded-lg border border-gray-200">
+                    <label class="text-[10px] text-purple-500 block mb-0.5">終了時 (kg)</label>
+                    <input type="number" step="0.1" id="target-end-weight" class="w-full p-1.5 text-sm font-bold rounded-lg border border-purple-200 outline-none focus:ring-2 focus:ring-purple-300">
                   </div>
                 </div>
               </div>
-
-              <button id="target-save-btn" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2.5 rounded-xl mt-1 shadow-sm text-sm">
-                自動計算して設定する
-              </button>
             </div>
 
-            <!-- ペース指定モード -->
-            <div id="form-pace" class="hidden space-y-3">
-              <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100">
-                <label class="text-[10px] font-bold text-gray-600 block mb-1.5">ペース</label>
-                <div class="flex gap-2 items-center text-xs font-bold text-gray-700">
-                  <input type="number" id="pace-days" class="w-12 p-1.5 rounded-lg border border-gray-200 text-center" value="2">
-                  <span>日で</span>
-                  <input type="number" step="0.1" id="pace-weight" class="w-16 p-1.5 rounded-lg border border-gray-200 text-center" value="0.1">
-                  <span>kg 減らす</span>
+            <!-- ====== モード2: ペースから設定 ====== -->
+            <div id="mode-calc-pace" class="flex-1 flex flex-col gap-3 hidden">
+              
+              <div class="bg-blue-50/50 p-2.5 rounded-xl border border-blue-100 flex gap-2">
+                <div class="flex-1">
+                  <label class="text-[10px] font-bold text-blue-700 block mb-0.5">今の体重(kg)</label>
+                  <input type="number" step="0.1" id="pace-start-weight" class="w-full p-1.5 text-sm font-bold rounded-lg border border-blue-200 outline-none focus:ring-2 focus:ring-blue-300">
+                </div>
+                <div class="flex-1">
+                  <label class="text-[10px] font-bold text-blue-700 block mb-0.5">最終目標(kg)</label>
+                  <input type="number" step="0.1" id="pace-end-weight" class="w-full p-1.5 text-sm font-bold rounded-lg border border-blue-200 outline-none focus:ring-2 focus:ring-blue-300">
                 </div>
               </div>
 
-              <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-2">
-                <div class="flex gap-2 items-center">
-                  <label class="text-[10px] font-bold text-gray-600 w-12 shrink-0">開始日</label>
-                  <input type="date" id="pace-start-date" class="flex-1 text-xs p-1.5 rounded-lg border border-gray-200">
-                </div>
-                <div class="flex gap-4">
-                  <div class="flex-1">
-                    <label class="text-[10px] text-gray-500 block mb-1">開始時 (kg)</label>
-                    <input type="number" step="0.1" id="pace-start-weight" class="w-full p-1.5 text-sm font-bold rounded-lg border border-gray-200">
-                  </div>
-                  <div class="flex-1">
-                    <label class="text-[10px] text-gray-500 block mb-1">最終目標 (kg)</label>
-                    <input type="number" step="0.1" id="pace-target-weight" class="w-full p-1.5 text-sm font-bold rounded-lg border border-gray-200">
-                  </div>
+              <div class="bg-blue-50/50 p-2.5 rounded-xl border border-blue-100">
+                <label class="text-[10px] font-bold text-blue-700 block mb-1">どのくらいのペースで？</label>
+                <div class="flex items-center gap-2 justify-center">
+                  <input type="number" id="pace-days" value="2" min="1" class="w-12 p-1.5 text-sm text-center font-bold rounded-lg border border-blue-200 outline-none focus:ring-2 focus:ring-blue-300">
+                  <span class="text-xs font-bold text-blue-600">日で</span>
+                  <input type="number" id="pace-grams" value="100" min="10" step="10" class="w-16 p-1.5 text-sm text-center font-bold rounded-lg border border-blue-200 outline-none focus:ring-2 focus:ring-blue-300">
+                  <span class="text-xs font-bold text-blue-600">g 減</span>
                 </div>
               </div>
-
-              <div id="pace-result" class="text-xs font-bold text-center text-purple-600 hidden bg-purple-50 py-2 rounded-xl border border-purple-100">
-                 達成予定: <span id="pace-end-date" class="text-sm mx-1"></span><span class="text-[10px] text-purple-400 font-normal">(<span id="pace-total-days"></span>日後)</span>
+              
+              <!-- 達成予定日プレビュー -->
+              <div class="bg-gray-50 p-2 rounded-xl border border-gray-200 text-center flex items-center justify-between px-4">
+                <span class="text-[10px] font-bold text-gray-500">達成予定日</span>
+                <div class="text-right">
+                  <p id="pace-result-date" class="text-sm font-bold text-blue-600 leading-none">---</p>
+                  <p id="pace-result-days" class="text-[9px] text-gray-500 mt-0.5 leading-none"></p>
+                </div>
+                <input type="hidden" id="pace-calculated-end-date">
               </div>
+            </div>
 
-              <button id="pace-save-btn" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2.5 rounded-xl mt-1 shadow-sm text-sm">
-                自動計算して設定する
-              </button>
-            </div>
-          </div>
-          
-          <!-- データ管理（一括削除） -->
-          <div class="mt-3 pt-3 border-t border-gray-100 shrink-0">
-            <h3 class="text-[10px] font-bold text-gray-500 mb-2 flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> データの一括削除</h3>
-            <div class="flex gap-2">
-              <button id="reset-diet-btn" class="flex-1 py-2 bg-red-50 text-red-500 font-bold rounded-lg text-[10px] hover:bg-red-100 transition-colors">体重リセット</button>
-              <button id="reset-exp-btn" class="flex-1 py-2 bg-red-50 text-red-500 font-bold rounded-lg text-[10px] hover:bg-red-100 transition-colors">支出リセット</button>
-              <button id="reset-work-btn" class="flex-1 py-2 bg-red-50 text-red-500 font-bold rounded-lg text-[10px] hover:bg-red-100 transition-colors">副業リセット</button>
-            </div>
+            <button id="target-save-btn" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-xl shadow-sm transition-colors mt-auto shrink-0">
+              自動計算して設定
+            </button>
           </div>
 
+          <!-- 一括削除エリア (横に詰めて配置) -->
+          <div class="mt-4 pt-3 border-t border-gray-100 shrink-0">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-gray-400">データ一括リセット</span>
+              <div class="flex gap-1.5">
+                <button onclick="bulkDelete('weights', '体重')" class="px-3 py-1.5 bg-red-50 text-red-500 text-[10px] font-bold rounded-lg hover:bg-red-100">体重</button>
+                <button onclick="bulkDelete('expenses', '支出')" class="px-3 py-1.5 bg-red-50 text-red-500 text-[10px] font-bold rounded-lg hover:bg-red-100">支出</button>
+                <button onclick="bulkDelete('works', '副業')" class="px-3 py-1.5 bg-red-50 text-red-500 text-[10px] font-bold rounded-lg hover:bg-red-100">副業</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -202,8 +204,9 @@
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">¥</span>
             <input type="number" id="expense-amount" placeholder="0" class="w-full pl-8 p-2.5 bg-gray-50 rounded-xl outline-none font-bold text-lg">
           </div>
-          <button id="expense-save-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-1 shadow-sm transition-colors">
-            <i data-lucide="plus" class="w-4 h-4"></i> 追加
+          <input type="hidden" id="expense-edit-id">
+          <button id="expense-save-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-1 shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4" id="expense-save-icon"></i> <span id="expense-save-text">追加</span>
           </button>
         </div>
 
@@ -235,8 +238,8 @@
             <input type="number" id="work-minutes" placeholder="例: 30" class="w-full p-2.5 bg-gray-50 rounded-xl outline-none font-bold text-lg">
             <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-sm">分</span>
           </div>
-          <button id="work-save-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-1 shadow-sm transition-colors">
-            <i data-lucide="plus" class="w-4 h-4"></i> 記録
+          <button id="work-save-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-1 shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4" id="work-save-icon"></i> <span id="work-save-text">記録</span>
           </button>
         </div>
 
@@ -291,16 +294,16 @@
   <!-- カスタム確認ダイアログ (削除確認用) -->
   <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 opacity-0 pointer-events-none transition-opacity duration-200">
     <div class="bg-white rounded-2xl p-6 w-11/12 max-w-xs shadow-xl transform scale-95 transition-transform duration-200" id="confirm-box">
-      <p id="confirm-message" class="text-gray-800 font-bold mb-6 text-center text-sm leading-relaxed whitespace-pre-wrap">この記録を削除しますか？</p>
+      <p id="confirm-message" class="text-gray-800 font-bold mb-6 text-center text-sm leading-relaxed"></p>
       <div class="flex gap-3">
-        <button id="confirm-cancel" class="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm transition-colors hover:bg-gray-200">キャンセル</button>
-        <button id="confirm-ok" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-sm transition-colors hover:bg-red-600">削除する</button>
+        <button id="confirm-cancel" class="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm">キャンセル</button>
+        <button id="confirm-ok" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-sm">削除する</button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- ユーティリティ ---
+    // --- ユーティリティ関数 ---
     const getToday = () => new Date();
     const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const getOffsetDateStr = (offset) => { const d = new Date(); d.setDate(d.getDate() + offset); return formatDate(d); };
@@ -313,23 +316,37 @@
       confirmCallback = callback;
       const modal = document.getElementById('confirm-modal');
       const box = document.getElementById('confirm-box');
-      modal.classList.remove('pointer-events-none');
-      modal.classList.remove('opacity-0');
+      modal.classList.remove('pointer-events-none', 'opacity-0');
       box.classList.remove('scale-95');
     };
     const hideConfirm = () => {
       const modal = document.getElementById('confirm-modal');
       const box = document.getElementById('confirm-box');
-      modal.classList.add('opacity-0');
-      modal.classList.add('pointer-events-none');
+      modal.classList.add('opacity-0', 'pointer-events-none');
       box.classList.add('scale-95');
       confirmCallback = null;
     };
-    document.getElementById('confirm-cancel').addEventListener('click', hideConfirm);
-    document.getElementById('confirm-ok').addEventListener('click', () => {
+    
+    // イベントリスナーの安全な登録
+    const safeAddListener = (id, event, handler) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener(event, handler);
+    };
+
+    safeAddListener('confirm-cancel', 'click', hideConfirm);
+    safeAddListener('confirm-ok', 'click', () => {
       if(confirmCallback) confirmCallback();
       hideConfirm();
     });
+
+    // 一括削除
+    window.bulkDelete = (key, name) => {
+      showConfirm(`${name}のデータを全てリセットしますか？`, () => {
+        state[key] = [];
+        saveData(key, []);
+        switchTab(state.activeTab); // 現在のタブを再描画
+      });
+    };
 
     // --- 定数と状態 ---
     const EXPENSE_CATEGORIES = ['食費', '日用品', '嗜好品', '趣味', 'その他'];
@@ -337,22 +354,9 @@
     const WORK_GOAL = 30;
 
     const defaultData = {
-      weights: [
-        { date: getOffsetDateStr(-3), weight: 66.2, target: 65.5 },
-        { date: getOffsetDateStr(-2), weight: 66.0, target: 65.4 },
-        { date: getOffsetDateStr(-1), weight: 65.8, target: 65.3 },
-        { date: getOffsetDateStr(0), weight: null, target: 65.2 },
-      ],
-      expenses: [
-        { id: 1, date: getOffsetDateStr(-3), amount: 1200, category: '食費' },
-        { id: 2, date: getOffsetDateStr(-2), amount: 450, category: '嗜好品' },
-        { id: 3, date: getOffsetDateStr(-1), amount: 3200, category: '日用品' }
-      ],
-      works: [
-        { date: getOffsetDateStr(-3), minutes: 20 },
-        { date: getOffsetDateStr(-2), minutes: 35 },
-        { date: getOffsetDateStr(-1), minutes: 40 }
-      ]
+      weights: [],
+      expenses: [],
+      works: []
     };
 
     const loadData = (key) => {
@@ -363,20 +367,17 @@
 
     let state = {
       activeTab: 'diet',
-      targetMode: 'period', 
       weights: loadData('weights'),
       expenses: loadData('expenses'),
       works: loadData('works'),
       expenseMonth: { year: getToday().getFullYear(), month: getToday().getMonth() + 1 },
       expenseCategory: EXPENSE_CATEGORIES[0],
       dietChartPeriod: 7, 
-      
       histType: null, 
       histMonth: { year: getToday().getFullYear(), month: getToday().getMonth() + 1 }
     };
 
     let dietChart = null, expenseChart = null, workChart = null;
-    let editingExpenseId = null; // 支出の編集状態管理
 
     // --- タブ切り替え ---
     const switchTab = (tabId) => {
@@ -384,16 +385,19 @@
       document.querySelectorAll('.hidden-view, [id^="view-"]').forEach(el => {
         if(el.id.startsWith('view-')) el.classList.add('hidden-view');
       });
-      document.getElementById(`view-${tabId}`).classList.remove('hidden-view');
+      const targetView = document.getElementById(`view-${tabId}`);
+      if(targetView) targetView.classList.remove('hidden-view');
 
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.className = "nav-btn flex-1 py-3 flex flex-col items-center gap-1 text-gray-400";
       });
       const activeBtn = document.querySelector(`.nav-btn[data-tab="${tabId}"]`);
       
-      const colorClass = tabId === 'diet' ? 'text-pink-500' : tabId === 'target' ? 'text-purple-500' : tabId === 'expense' ? 'text-blue-500' : 'text-orange-500';
-      activeBtn.classList.replace('text-gray-400', colorClass);
-      activeBtn.classList.add('font-bold');
+      if(activeBtn) {
+        const colorClass = tabId === 'diet' ? 'text-pink-500' : tabId === 'target' ? 'text-purple-500' : tabId === 'expense' ? 'text-blue-500' : 'text-orange-500';
+        activeBtn.classList.replace('text-gray-400', colorClass);
+        activeBtn.classList.add('font-bold');
+      }
       
       if(tabId === 'diet') renderDietInput();
       else if(tabId === 'target') renderTarget();
@@ -409,45 +413,59 @@
     const dietTargetEl = document.getElementById('diet-target');
     const dietDelBtn = document.getElementById('diet-delete-btn');
     const dietSaveBtn = document.getElementById('diet-save-btn');
-    dietDateEl.value = getTodayStr();
+    const dietSaveIcon = document.getElementById('diet-save-icon');
+    const dietSaveText = document.getElementById('diet-save-text');
 
-    dietDateEl.addEventListener('change', () => { updateDietForm(); });
+    safeAddListener('diet-date', 'change', () => { updateDietForm(); });
     
     const updateDietForm = () => {
-      const date = dietDateEl.value;
+      if(!dietDateEl) return;
+      const date = dietDateEl.value || getTodayStr();
+      dietDateEl.value = date;
       const record = state.weights.find(r => r.date === date);
-      if (record) {
-        dietWeightEl.value = record.weight !== null ? record.weight : '';
-        dietTargetEl.value = record.target !== null ? record.target : '';
-        dietDelBtn.classList.remove('hidden'); 
-      } else {
-        dietWeightEl.value = '';
-        dietTargetEl.value = '';
-        dietDelBtn.classList.add('hidden');
-      }
       
-      const diffEl = document.getElementById('diet-diff-container');
-      if(date === getTodayStr() && record && record.weight && record.target) {
-        const diff = (record.weight - record.target).toFixed(1);
-        document.getElementById('diet-diff-value').textContent = (diff > 0 ? '+' : '') + diff + ' kg';
-        document.getElementById('diet-diff-value').className = `font-bold text-xl ${diff <= 0 ? 'text-blue-500' : 'text-pink-500'}`;
-        diffEl.classList.remove('hidden');
+      if (record) {
+        if(dietWeightEl) dietWeightEl.value = record.weight !== null ? record.weight : '';
+        if(dietTargetEl) dietTargetEl.value = record.target !== null ? record.target : '';
+        if (record.weight !== null || record.target !== null) {
+          if(dietDelBtn) dietDelBtn.classList.remove('hidden');
+          if(dietSaveText) dietSaveText.textContent = "更新する";
+          if(dietSaveIcon) dietSaveIcon.setAttribute('data-lucide', 'refresh-cw');
+        } else {
+          if(dietDelBtn) dietDelBtn.classList.add('hidden');
+          if(dietSaveText) dietSaveText.textContent = "保存する";
+          if(dietSaveIcon) dietSaveIcon.setAttribute('data-lucide', 'plus');
+        }
       } else {
-        diffEl.classList.add('hidden');
-      }
-
-      // 編集状態の明示
-      if (record && (record.weight !== null || record.target !== null)) {
-        dietSaveBtn.innerHTML = '<i data-lucide="check" class="w-5 h-5"></i> 更新する';
-        dietSaveBtn.classList.replace('bg-pink-500', 'bg-pink-600');
-      } else {
-        dietSaveBtn.innerHTML = '<i data-lucide="plus" class="w-5 h-5"></i> 保存する';
-        dietSaveBtn.classList.replace('bg-pink-600', 'bg-pink-500');
+        if(dietWeightEl) dietWeightEl.value = '';
+        if(dietTargetEl) dietTargetEl.value = '';
+        if(dietDelBtn) dietDelBtn.classList.add('hidden');
+        if(dietSaveText) dietSaveText.textContent = "保存する";
+        if(dietSaveIcon) dietSaveIcon.setAttribute('data-lucide', 'plus');
       }
       lucide.createIcons();
+      
+      // 差分表示更新（クリア！！演出）
+      const diffEl = document.getElementById('diet-diff-container');
+      const diffValEl = document.getElementById('diet-diff-value');
+      
+      if(record && record.weight && record.target && diffEl && diffValEl) {
+        const diff = (record.weight - record.target).toFixed(1);
+        if (diff <= 0) {
+          diffValEl.textContent = 'クリア！！';
+          diffValEl.className = 'font-bold text-xl text-pink-500';
+        } else {
+          diffValEl.textContent = `+${diff} kg`;
+          diffValEl.className = 'font-bold text-xl text-gray-800';
+        }
+        diffEl.classList.remove('hidden');
+      } else if (diffEl) {
+        diffEl.classList.add('hidden');
+      }
     };
 
-    dietSaveBtn.addEventListener('click', () => {
+    safeAddListener('diet-save-btn', 'click', () => {
+      if(!dietDateEl) return;
       const date = dietDateEl.value;
       const w = dietWeightEl.value ? parseFloat(dietWeightEl.value) : null;
       const t = dietTargetEl.value ? parseFloat(dietTargetEl.value) : null;
@@ -459,29 +477,35 @@
       
       state.weights.sort((a, b) => new Date(a.date) - new Date(b.date));
       saveData('weights', state.weights);
-      renderDietInput();
+      updateDietForm();
     });
 
-    dietDelBtn.addEventListener('click', () => {
+    safeAddListener('diet-delete-btn', 'click', () => {
+      if(!dietDateEl) return;
       showConfirm(`${dietDateEl.value} の記録を削除しますか？`, () => {
         state.weights = state.weights.filter(r => r.date !== dietDateEl.value);
         saveData('weights', state.weights);
-        renderDietInput();
+        updateDietForm();
       });
     });
 
     const renderDietInput = () => {
-      document.getElementById('diet-input-mode').classList.remove('hidden');
-      document.getElementById('diet-chart-mode').classList.add('hidden');
+      const modeIn = document.getElementById('diet-input-mode');
+      const modeCh = document.getElementById('diet-chart-mode');
+      if(modeIn) modeIn.classList.remove('hidden');
+      if(modeCh) modeCh.classList.add('hidden');
+      if (dietDateEl && !dietDateEl.value) dietDateEl.value = getTodayStr();
       updateDietForm();
     };
 
-    document.getElementById('diet-show-chart-btn').addEventListener('click', () => {
-      document.getElementById('diet-input-mode').classList.add('hidden');
-      document.getElementById('diet-chart-mode').classList.remove('hidden');
+    safeAddListener('diet-show-chart-btn', 'click', () => {
+      const modeIn = document.getElementById('diet-input-mode');
+      const modeCh = document.getElementById('diet-chart-mode');
+      if(modeIn) modeIn.classList.add('hidden');
+      if(modeCh) modeCh.classList.remove('hidden');
       renderDietChart();
     });
-    document.getElementById('diet-hide-chart-btn').addEventListener('click', renderDietInput);
+    safeAddListener('diet-hide-chart-btn', 'click', renderDietInput);
 
     document.querySelectorAll('.period-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -493,10 +517,14 @@
     });
 
     const renderDietChart = () => {
-      const ctx = document.getElementById('diet-chart').getContext('2d');
+      const canvas = document.getElementById('diet-chart');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
       const emptyEl = document.getElementById('diet-chart-empty');
       
-      let targetData = [...state.weights];
+      const todayStr = getTodayStr();
+      let targetData = state.weights.filter(r => r.date <= todayStr);
+      
       if (state.dietChartPeriod !== 'all') {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - state.dietChartPeriod + 1);
@@ -505,11 +533,11 @@
       }
       
       if (targetData.length === 0) {
-        emptyEl.classList.remove('hidden');
+        if(emptyEl) emptyEl.classList.remove('hidden');
         if (dietChart) dietChart.destroy();
         return;
       }
-      emptyEl.classList.add('hidden');
+      if(emptyEl) emptyEl.classList.add('hidden');
 
       const labels = targetData.map(r => r.date.substring(5).replace('-', '/'));
       const wData = targetData.map(r => r.weight);
@@ -539,100 +567,120 @@
     const tEndEl = document.getElementById('target-end-date');
     const tStartWEl = document.getElementById('target-start-weight');
     const tEndWEl = document.getElementById('target-end-weight');
-
-    const paceStartEl = document.getElementById('pace-start-date');
-    const paceStartWEl = document.getElementById('pace-start-weight');
-    const paceTargetWEl = document.getElementById('pace-target-weight');
-    const paceDaysEl = document.getElementById('pace-days');
-    const paceWeightEl = document.getElementById('pace-weight');
-    const paceResultEl = document.getElementById('pace-result');
-
-    // タブ切り替え処理
-    const tabPeriod = document.getElementById('tab-period');
-    const tabPace = document.getElementById('tab-pace');
-    const formPeriod = document.getElementById('form-period');
-    const formPace = document.getElementById('form-pace');
-
-    tabPeriod.addEventListener('click', () => {
-      state.targetMode = 'period';
-      tabPeriod.classList.replace('text-gray-500', 'text-purple-600');
-      tabPeriod.classList.add('bg-white', 'shadow-sm');
-      tabPace.classList.replace('text-purple-600', 'text-gray-500');
-      tabPace.classList.remove('bg-white', 'shadow-sm');
-      formPeriod.classList.remove('hidden');
-      formPace.classList.add('hidden');
-      renderTarget();
-    });
-
-    tabPace.addEventListener('click', () => {
-      state.targetMode = 'pace';
-      tabPace.classList.replace('text-gray-500', 'text-purple-600');
-      tabPace.classList.add('bg-white', 'shadow-sm');
-      tabPeriod.classList.replace('text-purple-600', 'text-gray-500');
-      tabPeriod.classList.remove('bg-white', 'shadow-sm');
-      formPace.classList.remove('hidden');
-      formPeriod.classList.add('hidden');
-      renderTarget();
-    });
     
-    const updatePaceResult = () => {
-      const sDate = new Date(paceStartEl.value);
-      const sWeight = parseFloat(paceStartWEl.value);
-      const tWeight = parseFloat(paceTargetWEl.value);
-      const pDays = parseInt(paceDaysEl.value);
-      const pWeight = parseFloat(paceWeightEl.value);
+    // ペース設定用要素
+    const tabCalcPeriod = document.getElementById('tab-calc-period');
+    const tabCalcPace = document.getElementById('tab-calc-pace');
+    const modeCalcPeriod = document.getElementById('mode-calc-period');
+    const modeCalcPace = document.getElementById('mode-calc-pace');
+    
+    const paceStartWEl = document.getElementById('pace-start-weight');
+    const paceEndWEl = document.getElementById('pace-end-weight');
+    const paceDaysEl = document.getElementById('pace-days');
+    const paceGramsEl = document.getElementById('pace-grams');
+    const paceResultDateEl = document.getElementById('pace-result-date');
+    const paceResultDaysEl = document.getElementById('pace-result-days');
+    const paceCalcEndDateEl = document.getElementById('pace-calculated-end-date');
+    const targetSaveBtn = document.getElementById('target-save-btn');
 
-      if(isNaN(sWeight) || isNaN(tWeight) || isNaN(pDays) || isNaN(pWeight) || pDays <= 0 || pWeight <= 0 || sWeight <= tWeight) {
-        paceResultEl.classList.add('hidden');
+    let currentCalcMode = 'period'; 
+
+    if (tabCalcPeriod && tabCalcPace) {
+      tabCalcPeriod.addEventListener('click', () => {
+        currentCalcMode = 'period';
+        tabCalcPeriod.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-white shadow-sm text-purple-600 transition-all";
+        tabCalcPace.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all";
+        modeCalcPeriod.classList.remove('hidden');
+        modeCalcPace.classList.add('hidden');
+        targetSaveBtn.className = "w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3.5 rounded-xl mt-2 shadow-sm transition-colors";
+      });
+
+      tabCalcPace.addEventListener('click', () => {
+        currentCalcMode = 'pace';
+        tabCalcPace.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-white shadow-sm text-blue-600 transition-all";
+        tabCalcPeriod.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all";
+        modeCalcPace.classList.remove('hidden');
+        modeCalcPeriod.classList.add('hidden');
+        targetSaveBtn.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl mt-2 shadow-sm transition-colors";
+        calculatePaceResult();
+      });
+    }
+
+    const calculatePaceResult = () => {
+      if (!paceStartWEl) return;
+      const sWeight = parseFloat(paceStartWEl.value);
+      const eWeight = parseFloat(paceEndWEl.value);
+      const days = parseInt(paceDaysEl.value, 10);
+      const grams = parseInt(paceGramsEl.value, 10);
+
+      if (isNaN(sWeight) || isNaN(eWeight) || isNaN(days) || isNaN(grams) || sWeight <= eWeight || days <= 0 || grams <= 0) {
+        if(paceResultDateEl) paceResultDateEl.textContent = "---";
+        if(paceResultDaysEl) paceResultDaysEl.textContent = "正しい数値を入力してください";
+        if(paceCalcEndDateEl) paceCalcEndDateEl.value = "";
         return;
       }
 
-      const diffPerDay = pWeight / pDays;
-      const totalDiff = sWeight - tWeight;
-      const requiredDays = Math.ceil(totalDiff / diffPerDay);
-      
-      const eDate = new Date(sDate);
-      eDate.setDate(sDate.getDate() + requiredDays);
-      
-      document.getElementById('pace-end-date').textContent = formatDate(eDate);
-      document.getElementById('pace-total-days').textContent = requiredDays;
-      paceResultEl.classList.remove('hidden');
+      const diffGrams = (sWeight - eWeight) * 1000;
+      const gramsPerDay = grams / days;
+      const requiredDays = Math.ceil(diffGrams / gramsPerDay);
+
+      const startDate = getToday();
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + requiredDays);
+
+      if(paceResultDateEl) paceResultDateEl.textContent = `${endDate.getFullYear()}年${endDate.getMonth() + 1}月${endDate.getDate()}日`;
+      if(paceResultDaysEl) paceResultDaysEl.textContent = `今日から ${requiredDays} 日後`;
+      if(paceCalcEndDateEl) paceCalcEndDateEl.value = formatDate(endDate);
     };
 
-    [paceStartEl, paceStartWEl, paceTargetWEl, paceDaysEl, paceWeightEl].forEach(el => {
-      el.addEventListener('input', updatePaceResult);
-    });
+    if (paceStartWEl) paceStartWEl.addEventListener('input', calculatePaceResult);
+    if (paceEndWEl) paceEndWEl.addEventListener('input', calculatePaceResult);
+    if (paceDaysEl) paceDaysEl.addEventListener('input', calculatePaceResult);
+    if (paceGramsEl) paceGramsEl.addEventListener('input', calculatePaceResult);
 
     const renderTarget = () => {
-      const todayRec = state.weights.find(r => r.date === getTodayStr());
-      let defWeight = todayRec?.weight ? todayRec.weight : (todayRec?.target ? todayRec.target : '');
-
-      if (state.targetMode === 'period') {
+      if(tStartEl && !tStartEl.value) {
         tStartEl.value = getTodayStr();
-        tEndEl.value = getOffsetDateStr(30);
-        tStartWEl.value = defWeight;
-        tEndWEl.value = '';
-      } else {
-        paceStartEl.value = getTodayStr();
-        paceStartWEl.value = defWeight;
-        paceTargetWEl.value = '';
-        updatePaceResult();
+        if(tEndEl) tEndEl.value = getOffsetDateStr(30);
       }
+      const todayRec = state.weights.find(r => r.date === getTodayStr());
+      const defaultWeight = todayRec?.weight || todayRec?.target || '';
+      
+      if(tStartWEl && !tStartWEl.value) tStartWEl.value = defaultWeight;
+      if(paceStartWEl && !paceStartWEl.value) paceStartWEl.value = defaultWeight;
+      
+      calculatePaceResult();
     };
 
-    // 期間指定の保存
-    document.getElementById('target-save-btn').addEventListener('click', () => {
-      const start = new Date(tStartEl.value);
-      const end = new Date(tEndEl.value);
-      const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-      
-      if (diffDays <= 0 || !tStartWEl.value || !tEndWEl.value) return;
+    if (targetSaveBtn) {
+      targetSaveBtn.addEventListener('click', () => {
+        let startDateStr, endDateStr, sWeight, eWeight;
 
-      const sWeight = parseFloat(tStartWEl.value);
-      const eWeight = parseFloat(tEndWEl.value);
-      const diffPerDay = (eWeight - sWeight) / diffDays;
+        if (currentCalcMode === 'period') {
+          startDateStr = tStartEl ? tStartEl.value : null;
+          endDateStr = tEndEl ? tEndEl.value : null;
+          sWeight = tStartWEl ? parseFloat(tStartWEl.value) : NaN;
+          eWeight = tEndWEl ? parseFloat(tEndWEl.value) : NaN;
+        } else {
+          startDateStr = getTodayStr();
+          endDateStr = paceCalcEndDateEl ? paceCalcEndDateEl.value : null;
+          sWeight = paceStartWEl ? parseFloat(paceStartWEl.value) : NaN;
+          eWeight = paceEndWEl ? parseFloat(paceEndWEl.value) : NaN;
+        }
 
-      showConfirm(`設定した期間で目標を設定しますか？`, () => {
+        if (!startDateStr || !endDateStr || isNaN(sWeight) || isNaN(eWeight)) return;
+
+        const start = new Date(startDateStr);
+        const end = new Date(endDateStr);
+        const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays <= 0) {
+          alert('終了日は開始日より後の日付にしてください。');
+          return;
+        }
+
+        const diffPerDay = (eWeight - sWeight) / diffDays;
+
         for (let i = 0; i <= diffDays; i++) {
           const d = new Date(start); d.setDate(start.getDate() + i);
           const dateStr = formatDate(d);
@@ -642,84 +690,38 @@
           if (idx >= 0) state.weights[idx].target = targetW;
           else state.weights.push({ date: dateStr, weight: null, target: targetW });
         }
+        
         state.weights.sort((a, b) => new Date(a.date) - new Date(b.date));
         saveData('weights', state.weights);
-        switchTab('diet');
-        document.getElementById('confirm-cancel').textContent = "キャンセル";
-        document.getElementById('confirm-ok').textContent = "削除する";
+        
+        showConfirm("目標を一括設定しました。記録画面に戻りますか？", () => switchTab('diet'));
+        const btnCancel = document.getElementById('confirm-cancel');
+        const btnOk = document.getElementById('confirm-ok');
+        if(btnCancel) btnCancel.textContent = "閉じる"; 
+        if(btnOk) btnOk.textContent = "戻る";
       });
-      document.getElementById('confirm-cancel').textContent = "閉じる";
-      document.getElementById('confirm-ok').textContent = "設定する";
-    });
-
-    // ペース指定の保存
-    document.getElementById('pace-save-btn').addEventListener('click', () => {
-      const sDate = new Date(paceStartEl.value);
-      const sWeight = parseFloat(paceStartWEl.value);
-      const tWeight = parseFloat(paceTargetWEl.value);
-      const pDays = parseInt(paceDaysEl.value);
-      const pWeight = parseFloat(paceWeightEl.value);
-
-      if(isNaN(sWeight) || isNaN(tWeight) || isNaN(pDays) || isNaN(pWeight) || pDays <= 0 || pWeight <= 0 || sWeight <= tWeight) return;
-
-      const diffPerDay = pWeight / pDays;
-      const totalDiff = sWeight - tWeight;
-      const requiredDays = Math.ceil(totalDiff / diffPerDay);
-      const eDate = new Date(sDate);
-      eDate.setDate(sDate.getDate() + requiredDays);
-
-      showConfirm(`設定ペースだと、\n${requiredDays}日後の ${formatDate(eDate)} に\n目標達成予定です！\nこの内容で設定しますか？`, () => {
-         for (let i = 0; i <= requiredDays; i++) {
-           const d = new Date(sDate); d.setDate(sDate.getDate() + i);
-           const dateStr = formatDate(d);
-           
-           let targetW = sWeight - (diffPerDay * i);
-           if (i === requiredDays) targetW = tWeight; // 最終日はピタッと合わせる
-           targetW = Math.round(targetW * 10) / 10;
-           
-           const idx = state.weights.findIndex(r => r.date === dateStr);
-           if (idx >= 0) state.weights[idx].target = targetW;
-           else state.weights.push({ date: dateStr, weight: null, target: targetW });
-         }
-         state.weights.sort((a, b) => new Date(a.date) - new Date(b.date));
-         saveData('weights', state.weights);
-         switchTab('diet');
-         document.getElementById('confirm-cancel').textContent = "キャンセル";
-         document.getElementById('confirm-ok').textContent = "削除する";
-      });
-      document.getElementById('confirm-cancel').textContent = "閉じる";
-      document.getElementById('confirm-ok').textContent = "設定する";
-    });
-
-    // --- データ一括削除 (リセット) ---
-    document.getElementById('reset-diet-btn').addEventListener('click', () => {
-      showConfirm("本当に【体重】の全データを削除しますか？\nこの操作は元に戻せません。", () => {
-        state.weights = [];
-        saveData('weights', state.weights);
-        switchTab('target'); 
-      });
-    });
-    document.getElementById('reset-exp-btn').addEventListener('click', () => {
-      showConfirm("本当に【支出】の全データを削除しますか？\nこの操作は元に戻せません。", () => {
-        state.expenses = [];
-        saveData('expenses', state.expenses);
-      });
-    });
-    document.getElementById('reset-work-btn').addEventListener('click', () => {
-      showConfirm("本当に【副業】の全データを削除しますか？\nこの操作は元に戻せません。", () => {
-        state.works = [];
-        saveData('works', state.works);
-      });
-    });
+    }
 
     // ================= 支出管理画面 =================
     const expDateEl = document.getElementById('expense-date');
     const expAmountEl = document.getElementById('expense-amount');
     const expCatContainer = document.getElementById('expense-categories');
+    const expEditIdEl = document.getElementById('expense-edit-id');
     const expSaveBtn = document.getElementById('expense-save-btn');
-    expDateEl.value = getTodayStr();
+    const expSaveIcon = document.getElementById('expense-save-icon');
+    const expSaveText = document.getElementById('expense-save-text');
+    
+    const resetExpenseForm = () => {
+      if(expDateEl) expDateEl.value = getTodayStr();
+      if(expAmountEl) expAmountEl.value = '';
+      if(expEditIdEl) expEditIdEl.value = '';
+      if(expSaveText) expSaveText.textContent = "追加";
+      if(expSaveIcon) expSaveIcon.setAttribute('data-lucide', 'plus');
+      lucide.createIcons();
+    };
 
     const renderExpCategories = () => {
+      if(!expCatContainer) return;
       expCatContainer.innerHTML = EXPENSE_CATEGORIES.map(cat => `
         <button data-cat="${cat}" class="exp-cat-btn px-2 py-1 rounded-full text-[10px] font-bold transition-colors ${state.expenseCategory === cat ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600'}">
           ${cat}
@@ -733,25 +735,19 @@
       });
     };
 
-    const resetExpenseForm = () => {
-      editingExpenseId = null;
-      expAmountEl.value = '';
-      expSaveBtn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> 追加';
-      expSaveBtn.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-1 shadow-sm transition-colors";
-      lucide.createIcons();
-    };
-
-    expSaveBtn.addEventListener('click', () => {
+    safeAddListener('expense-save-btn', 'click', () => {
+      if(!expAmountEl) return;
       const amount = parseInt(expAmountEl.value, 10);
       if(!amount || isNaN(amount)) return;
       
-      if (editingExpenseId) {
-        const idx = state.expenses.findIndex(e => e.id === editingExpenseId);
-        if (idx >= 0) {
+      const editId = expEditIdEl ? expEditIdEl.value : null;
+      if (editId) {
+        const idx = state.expenses.findIndex(e => e.id == editId);
+        if(idx >= 0) {
           state.expenses[idx] = { ...state.expenses[idx], date: expDateEl.value, amount, category: state.expenseCategory };
         }
       } else {
-        state.expenses.push({ id: Date.now(), date: expDateEl.value, amount: amount, category: state.expenseCategory });
+        state.expenses.push({ id: Date.now(), date: expDateEl.value, amount, category: state.expenseCategory });
       }
       
       state.expenses.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -761,19 +757,23 @@
     });
 
     const renderExpense = () => {
+      if(expDateEl && !expDateEl.value) resetExpenseForm();
       renderExpCategories();
       const mStr = `${state.expenseMonth.year}-${String(state.expenseMonth.month).padStart(2, '0')}`;
       const mExpenses = state.expenses.filter(e => e.date.startsWith(mStr));
       
-      document.getElementById('exp-total-amount').textContent = `¥${mExpenses.reduce((s, e) => s + e.amount, 0).toLocaleString()}`;
+      const totalEl = document.getElementById('exp-total-amount');
+      if(totalEl) totalEl.textContent = `¥${mExpenses.reduce((s, e) => s + e.amount, 0).toLocaleString()}`;
       
       const agg = {}; mExpenses.forEach(e => { agg[e.category] = (agg[e.category] || 0) + e.amount; });
       const chartData = Object.keys(agg).map(k => ({ name: k, value: agg[k] })).sort((a,b) => b.value - a.value);
 
-      const ctx = document.getElementById('expense-chart').getContext('2d');
+      const canvas = document.getElementById('expense-chart');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
       const emptyEl = document.getElementById('expense-chart-empty');
-      if (chartData.length === 0) { emptyEl.classList.remove('hidden'); if(expenseChart) expenseChart.destroy(); return; }
-      emptyEl.classList.add('hidden');
+      if (chartData.length === 0) { if(emptyEl) emptyEl.classList.remove('hidden'); if(expenseChart) expenseChart.destroy(); return; }
+      if(emptyEl) emptyEl.classList.add('hidden');
 
       if (expenseChart) expenseChart.destroy();
       expenseChart = new Chart(ctx, {
@@ -787,25 +787,30 @@
     const workDateEl = document.getElementById('work-date');
     const workMinEl = document.getElementById('work-minutes');
     const workSaveBtn = document.getElementById('work-save-btn');
-    workDateEl.value = getTodayStr();
+    const workSaveIcon = document.getElementById('work-save-icon');
+    const workSaveText = document.getElementById('work-save-text');
 
+    safeAddListener('work-date', 'change', () => { updateWorkForm(); });
+    
     const updateWorkForm = () => {
-      const record = state.works.find(r => r.date === workDateEl.value);
-      workMinEl.value = record ? record.minutes : '';
+      if(!workDateEl) return;
+      const date = workDateEl.value || getTodayStr();
+      workDateEl.value = date;
+      const record = state.works.find(r => r.date === date);
+      if(workMinEl) workMinEl.value = record ? record.minutes : '';
       
-      if (record) {
-        workSaveBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> 更新する';
-        workSaveBtn.classList.replace('bg-orange-500', 'bg-orange-600');
+      if(record) {
+        if(workSaveText) workSaveText.textContent = "更新する";
+        if(workSaveIcon) workSaveIcon.setAttribute('data-lucide', 'refresh-cw');
       } else {
-        workSaveBtn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> 記録';
-        workSaveBtn.classList.replace('bg-orange-600', 'bg-orange-500');
+        if(workSaveText) workSaveText.textContent = "記録する";
+        if(workSaveIcon) workSaveIcon.setAttribute('data-lucide', 'plus');
       }
       lucide.createIcons();
     };
 
-    workDateEl.addEventListener('change', updateWorkForm);
-
-    workSaveBtn.addEventListener('click', () => {
+    safeAddListener('work-save-btn', 'click', () => {
+      if(!workMinEl || !workDateEl) return;
       const mins = parseInt(workMinEl.value, 10);
       if(!mins || isNaN(mins)) return;
       const date = workDateEl.value;
@@ -813,16 +818,21 @@
       if (idx >= 0) state.works[idx].minutes = mins; else state.works.push({ date, minutes: mins });
       state.works.sort((a, b) => new Date(a.date) - new Date(b.date));
       saveData('works', state.works);
+      updateWorkForm();
       renderWork();
     });
 
     const renderWork = () => {
+      if(workDateEl && !workDateEl.value) workDateEl.value = getTodayStr();
       updateWorkForm();
-      const ctx = document.getElementById('work-chart').getContext('2d');
+      
+      const canvas = document.getElementById('work-chart');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
       const emptyEl = document.getElementById('work-chart-empty');
       const recentWorks = state.works.slice(-14);
-      if (recentWorks.length === 0) { emptyEl.classList.remove('hidden'); if(workChart) workChart.destroy(); return; }
-      emptyEl.classList.add('hidden');
+      if (recentWorks.length === 0) { if(emptyEl) emptyEl.classList.remove('hidden'); if(workChart) workChart.destroy(); return; }
+      if(emptyEl) emptyEl.classList.add('hidden');
 
       const labels = recentWorks.map(r => r.date.substring(5).replace('-', '/'));
       const data = recentWorks.map(r => r.minutes);
@@ -839,32 +849,35 @@
       });
     };
 
-    // ================= 履歴モーダル処理 =================
+    // ================= 履歴モーダル処理 (支出＆副業) =================
     const histModal = document.getElementById('history-modal');
     const histModalContent = document.getElementById('history-modal-content');
     
     const openHistory = (type) => {
       state.histType = type;
       state.histMonth = { year: getToday().getFullYear(), month: getToday().getMonth() + 1 };
-      document.getElementById('history-title').textContent = type === 'expense' ? '支出履歴' : '副業履歴';
+      const titleEl = document.getElementById('history-title');
+      if(titleEl) titleEl.textContent = type === 'expense' ? '支出履歴' : '副業履歴';
       
-      histModal.classList.remove('hidden');
+      if(histModal) histModal.classList.remove('hidden');
       setTimeout(() => {
-        histModal.classList.remove('opacity-0');
-        histModalContent.classList.remove('translate-y-full');
+        if(histModal) histModal.classList.remove('opacity-0');
+        if(histModalContent) histModalContent.classList.remove('translate-y-full');
       }, 10);
       renderHistoryList();
     };
 
     const closeHistory = () => {
-      histModal.classList.add('opacity-0');
-      histModalContent.classList.add('translate-y-full');
-      setTimeout(() => histModal.classList.add('hidden'), 300);
+      if(histModal) histModal.classList.add('opacity-0');
+      if(histModalContent) histModalContent.classList.add('translate-y-full');
+      setTimeout(() => {
+         if(histModal) histModal.classList.add('hidden');
+      }, 300);
     };
 
-    document.getElementById('exp-history-btn').addEventListener('click', () => openHistory('expense'));
-    document.getElementById('work-history-btn').addEventListener('click', () => openHistory('work'));
-    document.getElementById('history-close-btn').addEventListener('click', closeHistory);
+    safeAddListener('exp-history-btn', 'click', () => openHistory('expense'));
+    safeAddListener('work-history-btn', 'click', () => openHistory('work'));
+    safeAddListener('history-close-btn', 'click', closeHistory);
 
     const changeHistMonth = (offset) => {
       let m = state.histMonth.month + offset;
@@ -873,35 +886,36 @@
       state.histMonth = { year: y, month: m };
       renderHistoryList();
     };
-    document.getElementById('hist-prev-month').addEventListener('click', () => changeHistMonth(-1));
-    document.getElementById('hist-next-month').addEventListener('click', () => changeHistMonth(1));
+    safeAddListener('hist-prev-month', 'click', () => changeHistMonth(-1));
+    safeAddListener('hist-next-month', 'click', () => changeHistMonth(1));
 
-    // 履歴からの編集
-    window.editHistItem = (id) => {
-      if (state.histType === 'expense') {
-        const expense = state.expenses.find(e => e.id === id);
-        if (expense) {
-          closeHistory();
-          switchTab('expense');
-          expDateEl.value = expense.date;
-          expAmountEl.value = expense.amount;
-          state.expenseCategory = expense.category;
+    // 履歴アイテムの編集
+    window.editHistItem = (idOrDate) => {
+      closeHistory();
+      if(state.histType === 'expense') {
+        const item = state.expenses.find(e => e.id == idOrDate);
+        if(item) {
+          if(expDateEl) expDateEl.value = item.date;
+          if(expAmountEl) expAmountEl.value = item.amount;
+          state.expenseCategory = item.category;
+          if(expEditIdEl) expEditIdEl.value = item.id;
+          if(expSaveText) expSaveText.textContent = "更新する";
+          if(expSaveIcon) expSaveIcon.setAttribute('data-lucide', 'refresh-cw');
           renderExpCategories();
-          
-          editingExpenseId = id;
-          expSaveBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> 更新する';
-          expSaveBtn.className = "w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-1 shadow-sm transition-colors";
           lucide.createIcons();
         }
+      } else {
+        if(workDateEl) workDateEl.value = idOrDate;
+        updateWorkForm();
       }
     };
 
+    // 履歴アイテムの削除
     window.deleteHistItem = (idOrDate) => {
       showConfirm("この記録を削除しますか？", () => {
         if(state.histType === 'expense') {
           state.expenses = state.expenses.filter(e => e.id != idOrDate);
           saveData('expenses', state.expenses);
-          if (editingExpenseId == idOrDate) resetExpenseForm();
           renderExpense(); 
         } else {
           state.works = state.works.filter(w => w.date !== idOrDate);
@@ -910,14 +924,14 @@
         }
         renderHistoryList();
       });
-      document.getElementById('confirm-cancel').textContent = "キャンセル";
-      document.getElementById('confirm-ok').textContent = "削除する";
     };
 
     const renderHistoryList = () => {
-      document.getElementById('hist-month-title').textContent = `${state.histMonth.year}年 ${state.histMonth.month}月`;
+      const titleEl = document.getElementById('hist-month-title');
+      if(titleEl) titleEl.textContent = `${state.histMonth.year}年 ${state.histMonth.month}月`;
       const mStr = `${state.histMonth.year}-${String(state.histMonth.month).padStart(2, '0')}`;
       const listEl = document.getElementById('history-list');
+      if(!listEl) return;
       
       if(state.histType === 'expense') {
         const data = state.expenses.filter(e => e.date.startsWith(mStr)).reverse();
@@ -927,8 +941,8 @@
           <div class="bg-white p-3 rounded-xl border border-gray-100 flex justify-between items-center shadow-sm">
             <div>
               <span class="text-[10px] text-gray-400 block">${e.date}</span>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold px-2 py-0.5 rounded text-white" style="background-color: ${CATEGORY_COLORS[e.category]||'#ccc'}">${e.category}</span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded text-white" style="background-color: ${CATEGORY_COLORS[e.category]||'#ccc'}">${e.category}</span>
                 <span class="font-bold text-gray-800">¥${e.amount.toLocaleString()}</span>
               </div>
             </div>
@@ -949,7 +963,7 @@
               <span class="font-bold text-gray-800">${w.minutes} 分</span>
             </div>
             <div class="flex gap-1">
-              <button onclick="switchTab('work'); document.getElementById('work-date').value='${w.date}'; updateWorkForm(); closeHistory();" class="p-2 text-blue-400 hover:bg-blue-50 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+              <button onclick="editHistItem('${w.date}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
               <button onclick="deleteHistItem('${w.date}')" class="p-2 text-red-400 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
           </div>
@@ -958,9 +972,10 @@
       lucide.createIcons();
     };
 
-    // --- 初期化 ---
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', (e) => switchTab(e.currentTarget.dataset.tab)));
-    lucide.createIcons();
+    // --- アプリケーション初期化 ---
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => switchTab(e.currentTarget.dataset.tab))
+    });
     switchTab('diet');
 
   </script>
